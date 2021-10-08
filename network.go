@@ -1,6 +1,9 @@
 package goneural
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"strconv"
+)
 
 // Network : A feed forward neural network
 type Network struct{
@@ -66,4 +69,9 @@ func (net *Network) Calculate(inputs []float64) []float64{
 		lastLayerValues = net.Layers[l].Calculate(lastLayerValues)
 	}
 	return lastLayerValues
+}
+
+func (net *Network) Summary() string{
+	s := "Network with " + strconv.Itoa(len(net.Layers))
+	return s
 }
