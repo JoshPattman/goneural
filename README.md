@@ -1,0 +1,2 @@
+# goneural
+ Golang neural networking
