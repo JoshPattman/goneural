@@ -1,1 +1,1 @@
-module goneural
+module github.com/JoshPattman/goneural
