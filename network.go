@@ -63,15 +63,23 @@ func (net *Network) LoadJSON(js string){
 }
 
 // Calculate : Propagate input values through the network and return the result
-func (net *Network) Calculate(inputs []float64) []float64{
+func (net *Network) Calculate(inputs []float64) ([]float64, error){
 	lastLayerValues := inputs
 	for l := range net.Layers{
-		lastLayerValues = net.Layers[l].Calculate(lastLayerValues)
+		var err error
+		lastLayerValues, err = net.Layers[l].Calculate(lastLayerValues)
+		if err != nil{
+			switch err.(type){
+			case BasicShapeError:
+				err = ShapeError{err.Error(), l}
+			}
+			return []float64{}, err
+		}
 	}
-	return lastLayerValues
+	return lastLayerValues, nil
 }
 
 func (net *Network) Summary() string{
-	s := "Network with " + strconv.Itoa(len(net.Layers))
+	s := "Network with " + strconv.Itoa(len(net.Layers)) + " layers"
 	return s
 }

@@ -9,7 +9,7 @@ import (
 
 type Layer interface{
 	// Calculate the layer by taking the values of the prev layer, doing some maths with our weights, then returning a list of the values of this layer
-	Calculate(previousValues []float64) []float64
+	Calculate(previousValues []float64) ([]float64, error)
 	// GetNumNeurons gets the number of neurons (outputs) in this layer
 	GetNumNeurons() int
 
@@ -38,9 +38,9 @@ func (layer *FeedForwardLayer) GetLayerNameID() string {
 }
 
 // Calculate :  Calculate the values of this layer using the values of the previous layer
-func (layer *FeedForwardLayer) Calculate(previousValues []float64) []float64{
+func (layer *FeedForwardLayer) Calculate(previousValues []float64) ([]float64, error){
 	if len(previousValues) != layer.PrevNeurons {
-		panic("Incorrect number of inputs to layer. Got " + strconv.Itoa(len(previousValues)) + ", wanted " + strconv.Itoa(layer.PrevNeurons))
+		return []float64{}, BasicShapeError{"Incorrect number of inputs to layer. Got " + strconv.Itoa(len(previousValues)) + ", wanted " + strconv.Itoa(layer.PrevNeurons)}
 	}
 	values := make([]float64, layer.ThisNeurons)
 	for neuron := range values{
@@ -49,7 +49,7 @@ func (layer *FeedForwardLayer) Calculate(previousValues []float64) []float64{
 		}
 		values[neuron] = layer.activation(values[neuron])
 	}
-	return values
+	return values, nil
 }
 
 // GetNumNeurons : Gets the number of neurons (outputs) of this layer
@@ -58,7 +58,7 @@ func (layer *FeedForwardLayer) GetNumNeurons() int{
 }
 
 // NewFeedForwardLayer : Creates a new feed forward layer with standard parameters
-func NewFeedForwardLayer(prevNeurons int, thisNeurons int, activation string) *FeedForwardLayer{
+func NewFeedForwardLayer(prevNeurons int, thisNeurons int, activation string) (*FeedForwardLayer, error){
 	if ActivationFunc, ok := activationFunctions[activation]; ok {
 		return &FeedForwardLayer{
 			PrevNeurons:      prevNeurons,
@@ -67,13 +67,13 @@ func NewFeedForwardLayer(prevNeurons int, thisNeurons int, activation string) *F
 			Biases:           makeRandomSlice(thisNeurons, -1, 1),
 			ActivationString: activation,
 			activation:       ActivationFunc,
-		}
+		}, nil
 	}
-	panic("Did not recognise activation function "+activation)
+	return nil, ActivationNotFoundError{activation}
 }
 
 // NewFeedForwardLayerAfter : Creates a new feed forward layer, but uses the number of nodes in the previous layer as the number of inputs in this layer
-func NewFeedForwardLayerAfter(prevLayer Layer, thisNeurons int, activation string)*FeedForwardLayer{
+func NewFeedForwardLayerAfter(prevLayer Layer, thisNeurons int, activation string)(*FeedForwardLayer, error){
 	return NewFeedForwardLayer(prevLayer.GetNumNeurons(), thisNeurons, activation)
 }
 
