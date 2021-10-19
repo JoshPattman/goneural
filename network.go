@@ -62,8 +62,8 @@ func (net *Network) LoadJSON(js string){
 	}
 }
 
-// Calculate : Propagate input values through the network and return the result
-func (net *Network) Calculate(inputs []float64) ([]float64, error){
+// Predict : Propagate input values through the network and return the result
+func (net *Network) Predict(inputs []float64) ([]float64, error){
 	lastLayerValues := inputs
 	for l := range net.Layers{
 		var err error

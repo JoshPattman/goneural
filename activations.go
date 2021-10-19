@@ -34,7 +34,7 @@ func SigmoidActivation(x float64) float64{
 ///////////////////////////////////// FUNCTION INDEX /////////////////////////////////////
 
 // activationFunctions : the default activation functions mapped from a string form of their name
-var activationFunctions map[string]ActivationFunction = map[string]ActivationFunction{
+var activationFunctions = map[string]ActivationFunction{
 	"linear":LinearActivation,
 	"relu":ReLUActivation,
 	"leaky_relu":LeakyReLUActivation,
