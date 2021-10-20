@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/goneural.iml" filepath="$PROJECT_DIR$/.idea/goneural.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../goneural-example/.idea/goneural-example.iml" filepath="$PROJECT_DIR$/../goneural-example/.idea/goneural-example.iml" />
       <module fileurl="file://$PROJECT_DIR$/../goneural_example/.idea/goneural_example.iml" filepath="$PROJECT_DIR$/../goneural_example/.idea/goneural_example.iml" />
     </modules>
   </component>

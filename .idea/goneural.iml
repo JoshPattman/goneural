@@ -6,5 +6,6 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="goneural_example" />
+    <orderEntry type="module" module-name="goneural-example" />
   </component>
 </module>
