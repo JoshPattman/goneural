@@ -43,20 +43,3 @@ func (n *FeedForwardNetwork) GetLastLayerDeltas(pred, expec []float64) []float64
 	return deltas
 }
 
-func (n *FeedForwardNetwork) FitOne(learningRate float64, X, Y []float64) float64{
-	YP := make([][]float64, len(n.Layers)+1)
-	YP[0] = X
-	for i := range n.Layers{
-		YP[i+1] = n.Layers[i].PropagateValues(YP[i])
-
-	}
-	deltas := n.GetLastLayerDeltas(YP[len(YP)-1], Y)
-	for invi := range YP{
-		i := len(YP) - 1 - invi
-		if i > 0 {
-			//dont want to do this for inputs
-			deltas = n.Layers[i-1].(GradientDescentLayer).TrainGradientDescent(learningRate, YP[i-1], deltas)
-		}
-	}
-	return GetLayerTotLoss(n.Loss, Y, YP[len(YP)-1])
-}

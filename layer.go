@@ -6,8 +6,3 @@ type Layer interface{
 	GetNumOutputs() int
 	GetActivation() Activation
 }
-
-type GradientDescentLayer interface{
-	Layer
-	TrainGradientDescent(learningRate float64, layerInputs, deltas []float64) []float64
-}
