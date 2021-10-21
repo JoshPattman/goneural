@@ -5,24 +5,25 @@ type LossFunction interface{
 	SingleLossDiff(expected, predicted float64) float64
 }
 
-func GetLayerLoss(l LossFunction, expectedX, predictedX []float64) []float64{
+func GetLayerTotLoss(l LossFunction, expectedX, predictedX []float64) float64{
 	if len(expectedX) != len(predictedX){
 		panic("Expected and predicted must be same length")
 	}
-	outs := make([]float64, len(expectedX))
-	for i := range outs{
-		outs[i] = l.SingleLoss(expectedX[i], predictedX[i])
+	out := 0.0
+	for i := range expectedX{
+		out += l.SingleLoss(expectedX[i], predictedX[i])
 	}
-	return outs
+	return out
 }
 
-func GetLayerDiffLoss(l LossFunction, expectedX, predictedX []float64) []float64{
+
+func GetLayerLossDiffs(l LossFunction, expectedX, predictedX []float64) []float64{
 	if len(expectedX) != len(predictedX){
 		panic("Expected and predicted must be same length")
 	}
-	outs := make([]float64, len(expectedX))
-	for i := range outs{
-		outs[i] = l.SingleLossDiff(expectedX[i], predictedX[i])
+	out := make([]float64, len(predictedX))
+	for i := range expectedX{
+		out[i] = l.SingleLossDiff(expectedX[i], predictedX[i])
 	}
-	return outs
+	return out
 }
