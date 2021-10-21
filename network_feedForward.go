@@ -35,6 +35,14 @@ func (n *FeedForwardNetwork) Predict(X []float64) []float64{
 	return CurrentX
 }
 
+func (n *FeedForwardNetwork) PredictAll(Xs [][]float64) [][]float64 {
+	Ys := make([][]float64, len(Xs))
+	for i := range Ys{
+		Ys[i] = n.Predict(Xs[i])
+	}
+	return Ys
+}
+
 func (n *FeedForwardNetwork) GetLastLayerDeltas(pred, expec []float64) []float64{
 	deltas := GetLayerLossDiffs(n.Loss, expec, pred)
 	for i := range deltas{

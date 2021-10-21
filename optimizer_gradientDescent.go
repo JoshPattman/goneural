@@ -10,7 +10,7 @@ type GradientDescentLayer interface{
 	TrainGradientDescent(learningRate float64, layerInputs, deltas []float64) []float64
 }
 
-func (o *GradientDescentOptimizer) FitOne(n *FeedForwardNetwork, X, Y []float64) float64{
+func (o *GradientDescentOptimizer) FitOne(n *FeedForwardNetwork, X, Y []float64){
 	YP := make([][]float64, len(n.Layers)+1)
 	YP[0] = X
 	for i := range n.Layers{
@@ -25,5 +25,4 @@ func (o *GradientDescentOptimizer) FitOne(n *FeedForwardNetwork, X, Y []float64)
 			deltas = n.Layers[i-1].(GradientDescentLayer).TrainGradientDescent(o.LearningRate, YP[i-1], deltas)
 		}
 	}
-	return GetLayerTotLoss(n.Loss, Y, YP[len(YP)-1])
 }
