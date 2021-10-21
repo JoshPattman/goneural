@@ -32,14 +32,18 @@ func (l *DenseLayer) PropagateValues (X []float64) []float64{
 }
 
 func (l *DenseLayer) GetNumInputs() int{
-	return len(l.Weights)
+	return len(l.Weights)-1
 }
 
 func (l *DenseLayer) GetNumOutputs() int{
 	return len(l.Weights[0])
 }
 
-func (l *DenseLayer) BackpropGD(learningRate float64, layerInputs, deltas []float64) []float64{
+func (l *DenseLayer) GetActivation() Activation{
+	return l.Ac
+}
+
+func (l *DenseLayer) TrainGradientDescent(learningRate float64, layerInputs, deltas []float64) []float64{
 	layerInputs = append(layerInputs, 1)
 	nextDeltas := make([]float64, len(layerInputs))
 
@@ -57,12 +61,4 @@ func (l *DenseLayer) BackpropGD(learningRate float64, layerInputs, deltas []floa
 	}
 	// remove delta for bias as we dont want it
 	return nextDeltas[:len(nextDeltas)-1]
-}
-
-func GetLasLayerDeltas(pred, expec []float64, loss LossFunction, ac Activation) []float64{
-	deltas := GetLayerLossDiffs(loss, expec, pred)
-	for i := range deltas{
-		deltas[i] = deltas[i] * ac.Diff(pred[i])
-	}
-	return deltas
 }
