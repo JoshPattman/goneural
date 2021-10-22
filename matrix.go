@@ -45,6 +45,10 @@ func (m *Matrix) SetValue1D(i int, v float64){
 	m.Values[i] = v
 }
 
+func (m *Matrix) AddValue1D(i int, v float64){
+	m.Values[i] += v
+}
+
 func (m *Matrix)GetValue2D(x, y int) float64{
 	i := x*m.Shape[1] + y
 	return m.Values[i]
@@ -53,6 +57,11 @@ func (m *Matrix)GetValue2D(x, y int) float64{
 func (m *Matrix)SetValue2D(x, y int, v float64){
 	i := x*m.Shape[1] + y
 	m.Values[i] = v
+}
+
+func (m *Matrix)AddValue2D(x, y int, v float64){
+	i := x*m.Shape[1] + y
+	m.Values[i] += v
 }
 
 func (m *Matrix) Get1DLength()int{
@@ -70,4 +79,16 @@ func (m *Matrix) CopyTo(m2 *Matrix){
 	for v := range m.Values{
 		m2.Values[v] = m.Values[v]
 	}
+}
+
+func (m *Matrix) CopyToSmaller(m2 *Matrix){
+	for v := range m2.Values{
+		m2.Values[v] = m.Values[v]
+	}
+}
+
+func (m *Matrix) Copy() *Matrix{
+	m2 := NewZerosMatrix(m.Shape)
+	m.CopyTo(m2)
+	return m2
 }

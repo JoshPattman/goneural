@@ -27,26 +27,26 @@ func (n *FeedForwardNetwork) AddLayer(layer Layer){
 	n.Layers = append(n.Layers, layer)
 }
 
-func (n *FeedForwardNetwork) Predict(X []float64) []float64{
-	CurrentX := &X
+func (n *FeedForwardNetwork) Predict(X *Matrix) *Matrix{
+	CurrentX := X
 	for i := range n.Layers{
 		CurrentX = n.Layers[i].PropagateValues(CurrentX)
 	}
-	return *CurrentX
+	return CurrentX.Copy()
 }
 
-func (n *FeedForwardNetwork) PredictAll(Xs [][]float64) [][]float64 {
-	Ys := make([][]float64, len(Xs))
+func (n *FeedForwardNetwork) PredictAll(Xs []*Matrix) []*Matrix {
+	Ys := make([]*Matrix, len(Xs))
 	for i := range Ys{
 		Ys[i] = n.Predict(Xs[i])
 	}
 	return Ys
 }
 
-func (n *FeedForwardNetwork) GetLastLayerDeltas(pred, expec []float64) []float64{
+func (n *FeedForwardNetwork) GetLastLayerDeltas(pred, expec *Matrix) *Matrix{
 	deltas := GetLayerLossDiffs(n.Loss, expec, pred)
-	for i := range deltas{
-		deltas[i] = deltas[i] * n.Layers[len(n.Layers)-1].GetActivation().Diff(pred[i])
+	for i := 0; i < deltas.Shape[0]; i++{
+		deltas.SetValue1D(i, deltas.GetValue1D(i) * n.Layers[len(n.Layers)-1].GetActivation().Diff(pred.GetValue1D(i)))
 	}
 	return deltas
 }
