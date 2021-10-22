@@ -20,14 +20,14 @@ func NewDenseLayer(numInputs, numOutputs int, activation Activation) *DenseLayer
 			W[i][j] = rand.Float64() * 2 - 1
 		}
 	}
-	iv := NewZerosMatrix([]int{numInputs+1})
+	iv := NewZerosMatrix(numInputs+1)
 	iv.SetValue1D(numInputs, 1)
 	return &DenseLayer{
 		Weights: *New2DMatrix(W),
 		Ac:      activation,
 		inputVals:    *iv,
-		outputVals:    *NewZerosMatrix([]int{numOutputs}),
-		nextDeltas: *NewZerosMatrix([]int{numInputs}),
+		outputVals:    *NewZerosMatrix(numOutputs),
+		nextDeltas: *NewZerosMatrix(numInputs),
 	}
 }
 

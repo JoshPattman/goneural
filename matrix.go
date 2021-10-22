@@ -26,7 +26,7 @@ func New2DMatrix(vals [][]float64) *Matrix{
 	}
 }
 
-func NewZerosMatrix(shape []int)*Matrix{
+func NewZerosMatrix(shape ...int)*Matrix{
 	l := 1
 	for _, l1 := range shape{
 		l *= l1
@@ -88,7 +88,7 @@ func (m *Matrix) CopyToSmaller(m2 *Matrix){
 }
 
 func (m *Matrix) Copy() *Matrix{
-	m2 := NewZerosMatrix(m.Shape)
+	m2 := NewZerosMatrix(m.Shape...)
 	m.CopyTo(m2)
 	return m2
 }

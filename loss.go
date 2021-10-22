@@ -21,7 +21,7 @@ func GetLayerLossDiffs(l LossFunction, expectedX, predictedX *Matrix) *Matrix{
 	if expectedX.Shape[0] !=predictedX.Shape[0]{
 		panic("Expected and predicted must be same length")
 	}
-	out := NewZerosMatrix([]int{predictedX.Shape[0]})
+	out := NewZerosMatrix(predictedX.Shape[0])
 	for i := 0; i < out.Shape[0]; i++{
 		out.SetValue1D(i, l.SingleLossDiff(expectedX.GetValue1D(i), predictedX.GetValue1D(i)))
 	}

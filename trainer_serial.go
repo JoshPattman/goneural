@@ -4,6 +4,7 @@ import "fmt"
 
 type SerialTrainer struct{
 	Opt Optimizer
+	UseRelativeLearningRate bool
 }
 
 func (s *SerialTrainer) Fit(n *FeedForwardNetwork, Xs, Ys []*Matrix, epochs, printRate int){
@@ -14,7 +15,8 @@ func (s *SerialTrainer) Fit(n *FeedForwardNetwork, Xs, Ys []*Matrix, epochs, pri
 				s.Opt.FitOne(n, Xs[i], Ys[i])
 				loss += GetLayerTotLoss(n.Loss, Ys[i], n.Predict(Xs[i]))
 			}
-			fmt.Println("Epoch: ", e, ", Loss (mse): ", loss/float64(len(Xs)))
+			loss = loss/float64(len(Xs))
+			fmt.Println("Epoch: ", e, ", Loss (mse): ", loss)
 		} else {
 			for i := range Xs{
 				s.Opt.FitOne(n, Xs[i], Ys[i])
