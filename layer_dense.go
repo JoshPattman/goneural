@@ -6,7 +6,8 @@ import (
 
 type DenseLayer struct{
 	Weights [][]float64
-	Ac Activation
+	Ac   Activation
+	vals []float64
 }
 
 func NewDenseLayer(numInputs, numOutputs int, activation Activation) *DenseLayer{
@@ -19,16 +20,19 @@ func NewDenseLayer(numInputs, numOutputs int, activation Activation) *DenseLayer
 	}
 	return &DenseLayer{
 		Weights: W,
-		Ac: activation,
+		Ac:      activation,
+		vals:    make([]float64, len(W[0])),
 	}
 }
 
-func (l *DenseLayer) PropagateValues (X []float64) []float64{
-	net := valsMulWeights(append(X, 1), l.Weights)
-	for i := range net{
-		net[i] = l.Ac.Calc(net[i])
+// TODO: fix this append
+func (l *DenseLayer) PropagateValues (X *[]float64) *[]float64{
+	withBias := append(*X, 1)
+	valsMulWeights(&l.vals, &withBias, &l.Weights)
+	for i := range l.vals {
+		l.vals[i] = l.Ac.Calc(l.vals[i])
 	}
-	return net
+	return &l.vals
 }
 
 func (l *DenseLayer) GetNumInputs() int{
@@ -43,22 +47,24 @@ func (l *DenseLayer) GetActivation() Activation{
 	return l.Ac
 }
 
-func (l *DenseLayer) TrainGradientDescent(learningRate float64, layerInputs, deltas []float64) []float64{
-	layerInputs = append(layerInputs, 1)
-	nextDeltas := make([]float64, len(layerInputs))
+func (l *DenseLayer) TrainGradientDescent(learningRate float64, layerInputs, deltas *[]float64) *[]float64{
+	withBias := append(*layerInputs, 1)
+	layerInputs = &withBias
+	nextDeltas := make([]float64, len(*layerInputs))
 
 	for ni := range l.Weights{
 		for no := range l.Weights[0]{
-			nextDeltas[ni] += deltas[no] * l.Weights[ni][no]
+			nextDeltas[ni] += (*deltas)[no] * l.Weights[ni][no]
 		}
-		nextDeltas[ni] = nextDeltas[ni] * l.Ac.Diff(layerInputs[ni])
+		nextDeltas[ni] = nextDeltas[ni] * l.Ac.Diff((*layerInputs)[ni])
 	}
 
-	for no := range deltas{
+	for no := range *deltas{
 		for ni := range l.Weights{
-			l.Weights[ni][no] += learningRate * deltas[no] * layerInputs[ni]
+			l.Weights[ni][no] += learningRate * (*deltas)[no] * (*layerInputs)[ni]
 		}
 	}
 	// remove delta for bias as we dont want it
-	return nextDeltas[:len(nextDeltas)-1]
+	clipped := nextDeltas[:len(nextDeltas)-1]
+	return &clipped
 }

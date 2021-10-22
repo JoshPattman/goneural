@@ -28,11 +28,11 @@ func (n *FeedForwardNetwork) AddLayer(layer Layer){
 }
 
 func (n *FeedForwardNetwork) Predict(X []float64) []float64{
-	CurrentX := X
+	CurrentX := &X
 	for i := range n.Layers{
 		CurrentX = n.Layers[i].PropagateValues(CurrentX)
 	}
-	return CurrentX
+	return *CurrentX
 }
 
 func (n *FeedForwardNetwork) PredictAll(Xs [][]float64) [][]float64 {

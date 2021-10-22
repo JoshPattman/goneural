@@ -7,17 +7,18 @@ type GradientDescentOptimizer struct{
 
 type GradientDescentLayer interface{
 	Layer
-	TrainGradientDescent(learningRate float64, layerInputs, deltas []float64) []float64
+	TrainGradientDescent(learningRate float64, layerInputs, deltas *[]float64) *[]float64
 }
 
 func (o *GradientDescentOptimizer) FitOne(n *FeedForwardNetwork, X, Y []float64){
-	YP := make([][]float64, len(n.Layers)+1)
-	YP[0] = X
+	YP := make([]*[]float64, len(n.Layers)+1)
+	YP[0] = &X
 	for i := range n.Layers{
 		YP[i+1] = n.Layers[i].PropagateValues(YP[i])
 
 	}
-	deltas := n.GetLastLayerDeltas(YP[len(YP)-1], Y)
+	firstDeltas := n.GetLastLayerDeltas(*YP[len(YP)-1], Y)
+	deltas := &firstDeltas
 	for invi := range YP{
 		i := len(YP) - 1 - invi
 		if i > 0 {
