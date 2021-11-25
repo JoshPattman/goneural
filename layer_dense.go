@@ -8,9 +8,6 @@ import (
 type DenseLayer struct{
 	Weights Matrix
 	Ac   Activation
-	inputVals Matrix
-	outputVals Matrix
-	nextDeltas Matrix
 }
 
 func NewDenseLayer(numInputs, numOutputs int, activation Activation) *DenseLayer{
@@ -21,25 +18,23 @@ func NewDenseLayer(numInputs, numOutputs int, activation Activation) *DenseLayer
 			W[i][j] = rand.Float64() * 2 - 1
 		}
 	}
-	iv := NewZerosMatrix(numInputs+1)
-	iv.SetValue1D(numInputs, 1)
 	return &DenseLayer{
 		Weights: *New2DMatrix(W),
 		Ac:      activation,
-		inputVals:    *iv,
-		outputVals:    *NewZerosMatrix(numOutputs),
-		nextDeltas: *NewZerosMatrix(numInputs),
 	}
 }
 
 func (l *DenseLayer) PropagateValues (X *Matrix) *Matrix{
 	// when we copy to this, the last value is the bias (set as 1 from creating), as inputVals is 1 longer than X
-	X.CopyTo(&l.inputVals)
-	valsMulWeightsMatrix(&l.outputVals, &l.inputVals, &l.Weights)
-	for i := 0; i < l.outputVals.Shape[0]; i++ {
-		l.outputVals.SetValue1D(i, l.Ac.Calc(l.outputVals.GetValue1D(i)))
+	X1 := New1DMatrix(make([]float64, X.Shape[0]+1))
+	X1.SetValue1D(X.Shape[0], 1)
+	X.CopyTo(X1)
+	Y1 := New1DMatrix(make([]float64, l.Weights.Shape[1]))
+	valsMulWeightsMatrix(Y1, X1, &l.Weights)
+	for i := 0; i < Y1.Shape[0]; i++ {
+		Y1.SetValue1D(i, l.Ac.Calc(Y1.GetValue1D(i)))
 	}
-	return &l.outputVals
+	return Y1
 }
 
 func (l *DenseLayer) GetNumInputs() int{
@@ -55,47 +50,26 @@ func (l *DenseLayer) GetActivation() Activation{
 	return l.Ac
 }
 
-// TrainGradientDescent : DEPRECATED
-func (l *DenseLayer) TrainGradientDescent(learningRate float64, layerInputs, deltas *Matrix) *Matrix{
-	layerInputs.CopyTo(&l.inputVals)
-
-	//Calculating deltas for next layer (don't bother calculating delta for bias node which is the last node)
-	for ni := 0; ni < l.Weights.Shape[0]-1; ni++{
-		l.nextDeltas.SetValue1D(ni, 0)
-		for no := 0; no < l.Weights.Shape[1]; no++{
-			d := deltas.GetValue1D(no) * l.Weights.GetValue2D(ni, no)
-			l.nextDeltas.AddValue1D(ni, d)
-		}
-		l.nextDeltas.SetValue1D(ni, l.nextDeltas.GetValue1D(ni) * l.Ac.Diff(l.inputVals.GetValue1D(ni)))
-	}
-
-	// Updating weights
-	for no := 0; no < deltas.Shape[0]; no ++{
-		for ni := 0; ni < l.Weights.Shape[0]; ni ++{
-			l.Weights.AddValue2D(ni, no, learningRate * deltas.GetValue1D(no) * l.inputVals.GetValue1D(ni))
-		}
-	}
-	return &l.nextDeltas
-}
-
 func (l *DenseLayer) TrainMinibatch(learningRate float64, avInputs, avDeltas *Matrix) *Matrix{
 	// this means we include biases
-	avInputs.CopyTo(&l.inputVals)
+	X1 := New1DMatrix(make([]float64, avInputs.Shape[0]+1))
+	X1.SetValue1D(avInputs.Shape[0], 1)
+	avInputs.CopyTo(X1)
+	nextDeltas := New1DMatrix(make([]float64, avInputs.Shape[0]))
 	//Calculating deltas for next layer (don't bother calculating delta for bias node which is the last node)
 	for ni := 0; ni < l.Weights.Shape[0]-1; ni++{
-		l.nextDeltas.SetValue1D(ni, 0)
 		for no := 0; no < l.Weights.Shape[1]; no++{
 			d := avDeltas.GetValue1D(no) * l.Weights.GetValue2D(ni, no)
-			l.nextDeltas.AddValue1D(ni, d)
+			nextDeltas.AddValue1D(ni, d)
 		}
-		l.nextDeltas.SetValue1D(ni, l.nextDeltas.GetValue1D(ni) * l.Ac.Diff(l.inputVals.GetValue1D(ni)))
+		nextDeltas.SetValue1D(ni, nextDeltas.GetValue1D(ni) * l.Ac.Diff(X1.GetValue1D(ni)))
 	}
 
 	// Updating weights
 	for no := 0; no < avDeltas.Shape[0]; no ++{
 		for ni := 0; ni < l.Weights.Shape[0]; ni ++{
-			l.Weights.AddValue2D(ni, no, learningRate * avDeltas.GetValue1D(no) * l.inputVals.GetValue1D(ni))
+			l.Weights.AddValue2D(ni, no, learningRate * avDeltas.GetValue1D(no) * X1.GetValue1D(ni))
 		}
 	}
-	return &l.nextDeltas
+	return nextDeltas
 }
