@@ -4,6 +4,7 @@ import (
 	"go/types"
 )
 
+// ReLUActivation : An activation for ReLU
 type ReLUActivation types.Nil
 
 func (a ReLUActivation) Calc(x float64) float64{

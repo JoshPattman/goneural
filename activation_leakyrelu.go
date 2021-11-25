@@ -1,6 +1,8 @@
 package goneural
 
+// LeakyReLUActivation : A leaky ReLU activation
 type LeakyReLUActivation struct{
+	// SubZeroGradient : The gradient of the function when x < 0
 	SubZeroGradient float64
 }
 

@@ -4,6 +4,7 @@ import (
 	"math/rand"
 )
 
+// DenseLayer : The standard type of dense neural network layer
 type DenseLayer struct{
 	Weights Matrix
 	Ac   Activation
