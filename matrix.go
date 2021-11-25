@@ -75,6 +75,13 @@ func (m *Matrix)Mul( f float64) *Matrix{
 	return m
 }
 
+func (m *Matrix)Add( m2 *Matrix) *Matrix{
+	for i := range m.Values{
+		m.Values[i] += m2.Values[i]
+	}
+	return m
+}
+
 func (m *Matrix) CopyTo(m2 *Matrix){
 	for v := range m.Values{
 		m2.Values[v] = m.Values[v]
