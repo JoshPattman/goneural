@@ -6,7 +6,7 @@ type MinibatchOptimizer struct{
 }
 
 
-type SGDLayer interface{
+type MinibatchLayer interface{
 	Layer
 	TrainMinibatch(learningRate float64, layerInputs, totDeltas *Matrix) *Matrix
 }
@@ -44,7 +44,7 @@ func (o *MinibatchOptimizer) FitBatch(n *FeedForwardNetwork, X, Y []*Matrix){
 	for inverseI := 0; inverseI < numLayers; inverseI ++ {
 		i := numLayers - 1 - inverseI
 		//fmt.Println("Layer", i, ":", n.Layers[i].GetNumOutputs(), avDeltas.Shape, n.Layers[i].GetNumInputs(), avLayerInputs[i].Shape)
-		avDeltas = n.Layers[i].(SGDLayer).TrainMinibatch(o.LearningRate, avLayerInputs[i], avDeltas)
+		avDeltas = n.Layers[i].(MinibatchLayer).TrainMinibatch(o.LearningRate, avLayerInputs[i], avDeltas)
 	}
 }
 
