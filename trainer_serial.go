@@ -1,6 +1,10 @@
 package goneural
 
-import "fmt"
+import (
+	"fmt"
+	"math/rand"
+	"time"
+)
 
 type SerialTrainer struct{
 	Opt Optimizer
@@ -11,7 +15,8 @@ func (s *SerialTrainer) Fit(n *FeedForwardNetwork, Xs, Ys []*Matrix, epochs, pri
 	batchSize := s.Opt.GetBatchSize()
 	numXs := ((len(Xs) / batchSize) - 1) * batchSize
 	for e := range make([]int, epochs) {
-		if e % printRate == 0{
+		ShuffleBoth(Xs, Ys)
+		if e % printRate == 0 && printRate != 0{
 			loss := 0.0
 			for i := 0; i < numXs; i += s.Opt.GetBatchSize(){
 				s.Opt.FitBatch(n, Xs[i:i+batchSize], Ys[i:i+batchSize])
@@ -25,4 +30,12 @@ func (s *SerialTrainer) Fit(n *FeedForwardNetwork, Xs, Ys []*Matrix, epochs, pri
 			}
 		}
 	}
+}
+
+func ShuffleBoth(X, Y []*Matrix){
+	s := time.Now().UnixNano()
+	rand.Seed(s)
+	rand.Shuffle(len(X), func(i, j int) { X[i], X[j] = X[j], X[i] })
+	rand.Seed(s)
+	rand.Shuffle(len(Y), func(i, j int) { Y[i], Y[j] = Y[j], Y[i] })
 }
