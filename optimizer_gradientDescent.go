@@ -1,6 +1,6 @@
 package goneural
 
-
+/*
 type GradientDescentOptimizer struct{
 	LearningRate float64
 }
@@ -10,7 +10,7 @@ type GradientDescentLayer interface{
 	TrainGradientDescent(learningRate float64, layerInputs, deltas *Matrix) *Matrix
 }
 
-func (o *GradientDescentOptimizer) FitOne(n *FeedForwardNetwork, X, Y *Matrix){
+func (o *GradientDescentOptimizer) FitBatch(n *FeedForwardNetwork, X, Y []*Matrix){
 	YP := make([]*Matrix, len(n.Layers)+1)
 	YP[0] = X
 	for i := range n.Layers{
@@ -26,3 +26,4 @@ func (o *GradientDescentOptimizer) FitOne(n *FeedForwardNetwork, X, Y *Matrix){
 		}
 	}
 }
+*/

@@ -2,6 +2,7 @@ package goneural
 
 type FeedForwardNetwork struct{
 	Inputs int
+	Outputs int
 	Layers []Layer
 	Loss LossFunction
 }
@@ -9,6 +10,7 @@ type FeedForwardNetwork struct{
 func NewFeedForwardNetwork(inputs int, loss LossFunction) *FeedForwardNetwork{
 	return &FeedForwardNetwork{
 		Inputs: inputs,
+		Outputs: inputs,
 		Layers: make([]Layer, 0),
 		Loss: loss,
 	}
@@ -24,6 +26,7 @@ func (n *FeedForwardNetwork) AddLayer(layer Layer){
 			panic("Cannot add that layer, it does not have the correct number of inputs")
 		}
 	}
+	n.Outputs = layer.GetNumOutputs()
 	n.Layers = append(n.Layers, layer)
 }
 

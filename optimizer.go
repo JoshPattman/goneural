@@ -1,5 +1,6 @@
 package goneural
 
 type Optimizer interface{
-	FitOne(n *FeedForwardNetwork, X, Y *Matrix)
+	FitBatch(n *FeedForwardNetwork, X, Y []*Matrix)
+	GetBatchSize() int
 }
