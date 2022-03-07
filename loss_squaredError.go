@@ -1,4 +1,4 @@
-package goneural
++package goneural
 
 import (
 	"go/types"
